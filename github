@@ -1,0 +1,79 @@
+local function request(url)
+    local ok, res = pcall(http.get, url)
+    if not ok or not res then
+        error("HTTP request failed: " .. url)
+    end
+    local data = res.readAll()
+    res.close()
+    return data
+end
+
+local function saveFile(path, content)
+    local dir = fs.getDir(path)
+    if not fs.exists(dir) then
+        fs.makeDir(dir)
+    end
+    local f = fs.open(path, "wb")
+    f.write(content)
+    f.close()
+end
+
+local function downloadRecursive(user, repo, dir, saveTo)
+    local apiURL =
+        "https://api.github.com/repos/" ..
+        user .. "/" .. repo .. "/contents/" .. (dir or "")
+
+    local json = request(apiURL)
+    local list = textutils.unserializeJSON(json)
+
+    if list.message == "Not Found" then
+        error("Path not found in repository.")
+    end
+
+    for _, item in ipairs(list) do
+        if item.type == "file" then
+            local raw = request(item.download_url)
+            local savePath =
+                fs.combine(saveTo, item.path)
+            saveFile(savePath, raw)
+            print("Downloaded file: " .. item.path)
+
+        elseif item.type == "dir" then
+            print("Entering directory: " .. item.path)
+            downloadRecursive(user, repo, item.path, saveTo)
+        end
+    end
+end
+
+-- =======================
+--      MAIN PROGRAM
+-- =======================
+
+local args = {...}
+if #args < 2 then
+    print("Usage:")
+    print(" github <user>/<repo>/<path> <destination>")
+    return
+end
+
+local repoPath = args[1]
+local dest = args[2]
+
+local user, repo, path = repoPath:match("([^/]+)/([^/]+)/(.*)")
+if not user then
+    print("Invalid repo/path format.")
+    print("Example: github user/repo/folder dest")
+    return
+end
+
+if path == "" then path = nil end
+
+print("Downloading from GitHub repo:")
+print(" User: " .. user)
+print(" Repo: " .. repo)
+print(" Path: " .. (path or "<root>"))
+print(" Saving to: " .. dest)
+print("")
+
+downloadRecursive(user, repo, path, dest)
+print("\nDone!")
