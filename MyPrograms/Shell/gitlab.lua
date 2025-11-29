@@ -8,9 +8,9 @@ local localFolder
 if args[2] ~= nil and args[2] ~= "" then
     localFolder = args[2]
 elseif remoteFolder == "" then
-    localFolder == "defaultFolder"
+    localFolder = "defaultFolder"
 else
-    localFolder == remoteFolder
+    localFolder = remoteFolder
 end
 
 shell.run("github " .. USER .. "/" ..  REPO .. "/" .. remoteFolder .. " " .. localFolder)
