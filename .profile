@@ -1,16 +1,10 @@
 local folder = "/repo/MyPrograms/Shell"
 
--- get current path string (semicolon separated)
-local pathStr = shell.path()
+-- Get current PATH string
+local pathStr = shell.path()  -- this is a string
 
--- append your folder (use ; separator)
+-- Append your folder, separated by ;
 pathStr = pathStr .. ";" .. folder
 
--- convert string to table
-local pathTable = {}
-for p in string.gmatch(pathStr, "[^;]+") do
-    table.insert(pathTable, p)
-end
-
--- set the updated PATH
-shell.setPath(pathTable)
+-- Set updated PATH
+shell.setPath(pathStr)
