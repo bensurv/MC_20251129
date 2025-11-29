@@ -8,7 +8,7 @@ local localFolder
 if args[2] ~= nil and args[2] ~= "" then
     localFolder = args[2]
 elseif remoteFolder == "" then
-    localFolder = "defaultFolder"
+    localFolder = "repo"
 else
     localFolder = remoteFolder
 end

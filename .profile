@@ -1,24 +1,16 @@
--- Get current shell PATH
-local path = shell.path()
-
--- Ensure path is a table (just in case)
-if type(path) ~= "table" then
-    path = {}
-end
-
--- Add folder if not already in PATH
 local folder = "/repo/MyPrograms/Shell"
-local alreadyAdded = false
-for _, p in ipairs(path) do
-    if p == folder then
-        alreadyAdded = true
-        break
-    end
+
+-- get current path string (semicolon separated)
+local pathStr = shell.path()
+
+-- append your folder (use ; separator)
+pathStr = pathStr .. ";" .. folder
+
+-- convert string to table
+local pathTable = {}
+for p in string.gmatch(pathStr, "[^;]+") do
+    table.insert(pathTable, p)
 end
 
-if not alreadyAdded then
-    table.insert(path, folder)
-end
-
--- Set the updated PATH
-shell.setPath(path)
+-- set the updated PATH
+shell.setPath(pathTable)
