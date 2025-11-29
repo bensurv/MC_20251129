@@ -1,3 +1,13 @@
+local function loadToken()
+    local h = fs.open("/etc/github.token", "r")
+    if not h then error("Missing /etc/github.token (create it manually)") end
+    local token = h.readAll()
+    h.close()
+    return token:gsub("%s+$", "")
+end
+
+local GITHUB_TOKEN = loadToken()
+
 local function request(url)
     local ok, res = pcall(http.get, url)
     if not ok or not res then
