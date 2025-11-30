@@ -1,0 +1,16 @@
+local args = {...}
+
+if #args == 0 then
+    print("Usage: cat <file1> <file2> ...")
+    return
+end
+
+for _, filename in ipairs(args) do
+    if fs.exists(filename) and not fs.isDir(filename) then
+        local h = fs.open(filename, "r")
+        print(h.readAll())
+        h.close()
+    else
+        print("cat: " .. filename .. ": No such file")
+    end
+end
